@@ -3,6 +3,7 @@ from tkcalendar import DateEntry
 import earthquakedata
 from tkinter import messagebox
 from datetime import datetime, timezone, timedelta
+from textblob import TextBlob # Checks spelling of user
 
 root = tk.Tk()
 root.title("Earthquake lookup")
@@ -14,12 +15,23 @@ closest_result = 0.3
 
 def call_data_search(closest_result = 0.3, time_closest = 86400000):
     listbox.delete(0, tk.END)
-    location_area = entry_1.get()
+
+    uncleaned_search = entry_1.get()
+
+    if uncleaned_search:
+        run_spell_check = TextBlob(uncleaned_search)
+        location_area = str(run_spell_check.correct())
+
+        entry_1.delete(0, tk.END)
+        entry_1.insert(0, location_area)
+    else:
+        location_area = uncleaned_search
+
     date_earth = entry_2.get()
     magnitude = entry_3.get()
 
     if not location_area:
-        messagebox.showwarning("Missing information, will not continue") # If even location is missing, will not continue
+        messagebox.showwarning("Missing information", "Please add location for a vaild search") # If even location is missing, will not continue
         return
     if magnitude and date_earth == "": # If magnitude and date_earth is missing still continue
         earthquakedata.coords_to_location(location_area)
@@ -59,10 +71,10 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000):
         time = ed["properties"]["time"]
         if date_ms and abs(time - date_ms) < time_closest:
            found_match = True
-           listbox.insert(tk.END, f"M{mag} - {place} (matched result)") # It found an exact location 
+           listbox.insert(tk.END, f"M{mag} - {place} (closest result)") # It found an exact location 
         elif magnitude and date_earth == "":
              print(result)  
-             listbox.insert(tk.END, f"M{mag} - {place} (newest result)") #Newest earthquake
+             listbox.insert(tk.END, f"M{mag} - {place} (newest result)") # Newest earthquake
         elif magnitude and abs (float(magnitude) - float (mag)) < closest_result:
              listbox.insert(tk.END, f"M{mag} - {place} (newest result)")
         elif magnitude and date_earth == "":
@@ -75,8 +87,8 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000):
     if not exact_area and not found_match:
         listbox.insert(0, "Could not find earthquake in exact location ") # If fails to find that specific of a earthquake then just finds a earthquake 500km within input location
         listbox.insert(1, "here are the closest ones")
-        
-    print(result)
+
+    print(result)   
 
 
 
@@ -92,7 +104,7 @@ label_1.place(x=590, y=-10)
 label_2 = tk.Label(root, text="Location of the earthquake?:" ,font=("Arial", 14))
 label_2.place(x=750, y=90)
 
-entry_1 = tk.Entry(root, width=30, bg=("blue"))
+entry_1 = tk.Entry(root, width=30, bg=("white"))
 entry_1.place(x=750, y=120)
 
 button_1 = tk.Button(root, text="Search for this earthquake",  command=call_data_search)
@@ -107,14 +119,11 @@ entry_2.place(x=750, y=180)
 label_3 = tk.Label(root, text="Magnitude of the earthquake? Up to 1 decimal point")
 label_3.place(x=750, y=220)
 
-entry_3 = tk.Entry(root, width=30, bg=("blue"))
+entry_3 = tk.Entry(root, width=30, bg=("white"))
 entry_3.place(x=750, y=260)
 
 listbox = tk.Listbox(root, width=50,height=10)
 listbox.place(x=750, y=340)
-
-
-
 
 
 root.mainloop()
