@@ -19,13 +19,13 @@ results_history = pd.DataFrame(columns=["location", "magnitude", "place", "time"
 
 
 
-def call_data_search(closest_result = 0.3, time_closest = 86400000):
+def call_data_search(closest_result = 0.3, time_closest = 86400000): # As computers count in seconds time_closest variable is equal to 1 day in computer time 
 
     global search_history
     global results_history
     listbox.delete(0, tk.END)
 
-    uncleaned_search = entry_1.get()
+    uncleaned_search = entry_1.get() # Runs a spell check using textblob 
 
     if uncleaned_search:
         run_spell_check = TextBlob(uncleaned_search)
@@ -52,7 +52,7 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000):
     
     if date_earth:
        date_ms = datetime.strptime(date_earth, "%d-%m-%Y").replace(tzinfo=timezone.utc).timestamp() * 1000
-       start = datetime.strptime(date_earth, "%d-%m-%Y").strftime("%Y-%m-%d")
+       start = datetime.strptime(date_earth, "%d-%m-%Y").strftime("%Y-%m-%d") 
        end = (datetime.strptime(date_earth, "%d-%m-%Y") + timedelta(days=1)).strftime("%Y-%m-%d")
     else:
        date_ms = None
@@ -80,10 +80,10 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000):
         return
     exact_area = any(location_area.lower() in ed ["properties"]["place"].lower() for ed in features)
     found_match = False
-    for ed in features:
-        place =  ed["properties"]["place"]
-        mag = ed["properties"]["mag"]
-        time = ed["properties"]["time"]
+    for e in features:
+        place =  e["properties"]["place"]
+        mag = e["properties"]["mag"]
+        time = e["properties"]["time"]
         new_result = pd.DataFrame([{"location": location_area, "magnitude": mag, "place": place, "time": time}])
         results_history = pd.concat([results_history, new_result], ignore_index=True)
         if date_ms and abs(time - date_ms) < time_closest:
@@ -117,6 +117,9 @@ label_1.place(x=590, y=-10)
 
 label_2 = tk.Label(root, text="Location of the earthquake?:" ,font=("Arial", 14))
 label_2.place(x=750, y=90)
+
+
+ 
 
 entry_1 = tk.Entry(root, width=30, bg=("white"))
 entry_1.place(x=750, y=120)

@@ -13,7 +13,7 @@ def coords_to_location(place, closest=5):
 
     response = requests.get(
         OPEN_MAP,
-        params={"q": place},
+        params={"q": place},   
         headers=head
     )
     data = response.json()
@@ -54,7 +54,6 @@ def real_location(lat, lon, date, magnitude, start, end):
     if not data_2:
         print("Not found")
         return None
-
    
     return data_2, False
 
