@@ -25,20 +25,38 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # As comput
     global results_history
     listbox.delete(0, tk.END)
 
-    uncleaned_search = entry_1.get() # Runs a spell check using textblob 
+    uncleaned_search = entry_1.get() # Runs a spell check using textblob, and asks user if thats what they meant for the input 
 
     if uncleaned_search:
         run_spell_check = TextBlob(uncleaned_search)
-        location_area = str(run_spell_check.correct())
+        corrected = str(run_spell_check.correct())
 
-        entry_1.delete(0, tk.END)
-        entry_1.insert(0, location_area)
-    else:
-        location_area = uncleaned_search
+        if corrected.lower() != uncleaned_search.lower():
+            answer = messagebox.askyesno("Spell Check Just in Case", f"Did you mean '{corrected}") # Pop up to ask
+            if answer:
+                location_area = corrected
+            else:
+                location_area = uncleaned_search
+        else:
+            location_area = uncleaned_search
+
+    if any(char.isdigit() for char in uncleaned_search): # Does the first input have numeric digits? It shouldn't this process stops it
+        messagebox.showerror("Invaild Characters here!", f"You can only put characters in this box!")
+        return
+
+
+    entry_1.delete(0, tk.END)
+    entry_1.insert(0, location_area)
 
     date_earth = entry_2.get()
     magnitude = entry_3.get()
-    
+
+
+    if magnitude and not magnitude.replace(".", "", 1).isdigit():
+        messagebox.showerror("Invaild input dude", "You can only put numbers in this section!")
+        return
+
+   
     new_row = pd.DataFrame([{"location": location_area, "date": date_earth, "magnitude": magnitude}])
     search_history = pd.concat([search_history, new_row], ignore_index=True)
     if not location_area:
@@ -80,10 +98,10 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # As comput
         return
     exact_area = any(location_area.lower() in ed ["properties"]["place"].lower() for ed in features)
     found_match = False
-    for e in features:
-        place =  e["properties"]["place"]
-        mag = e["properties"]["mag"]
-        time = e["properties"]["time"]
+    for exact in features:
+        place =  exact["properties"]["place"]
+        mag = exact["properties"]["mag"]
+        time = exact["properties"]["time"]
         new_result = pd.DataFrame([{"location": location_area, "magnitude": mag, "place": place, "time": time}])
         results_history = pd.concat([results_history, new_result], ignore_index=True)
         if date_ms and abs(time - date_ms) < time_closest:
@@ -94,10 +112,15 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # As comput
              listbox.insert(tk.END, f"M{mag} - {place} (magnitude match)")
         else:
             listbox.insert(tk.END, f"M{mag} - {place}")
-
-
+        
     
-    if not exact_area and not found_match:
+
+    if is_fallback: # API Retry Call with the case of User not filling out "Date of Earthquake"
+        listbox.insert(0, "Could not find earthquake in exact location ")
+        listbox.insert(1, "here are the closest ones")
+
+
+    elif not exact_area and not found_match: # API returned results but none were exact match
         listbox.insert(0, "Could not find earthquake in exact location ") # If fails to find that specific of a earthquake then just finds a earthquake 500km within input location
         listbox.insert(1, "here are the closest ones")
 
@@ -133,7 +156,7 @@ label_2.place(x=750, y=150)
 entry_2 = DateEntry(root, date_pattern='dd-mm-yyyy')
 entry_2.place(x=750, y=180)
 
-label_3 = tk.Label(root, text="Magnitude of the earthquake? Up to 1 decimal point")
+label_3 = tk.Label(root, text="Magnitude of the earthquake? Up to 1 decimal point. The process will call any earthquake result within 0.3 of a magnitude")
 label_3.place(x=750, y=220)
 
 entry_3 = tk.Entry(root, width=30, bg=("white"))

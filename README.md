@@ -19,9 +19,7 @@ The GUI for the project is built off main.py, where the user interacts and utili
 The file where information and data is called, is earthquakedata.py. When information is submitted by the user, it calls the API and also reads how much information has been submitted, and returns data based off that factor.
 
 
-# Possible future updates, bugs and possible ways this could be maintained
-As we can see it displays 3 categories, but as a possible add-on a summary or map of where the earthquake happened would be feasible. 
-A possible bug is where the USGS or OpenMapStreet API would crash or be unavailable, which would lead to error messages in terminal/console. The system could be maintained and updated to prevent crashes or downtime, and keeping up with updates on our API Services.  
+
 
 
 
