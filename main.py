@@ -120,9 +120,7 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # As comput
         listbox.insert(1, "here are the closest ones")
 
 
-    elif not exact_area and not found_match: # API returned results but none were exact match
-        listbox.insert(0, "Could not find earthquake in exact location ") # If fails to find that specific of a earthquake then just finds a earthquake 500km within input location
-        listbox.insert(1, "here are the closest ones")
+    
 
     search_history.to_csv("search_history.csv", index=False)
     results_history.to_csv("results_history.csv", index=False)
@@ -150,7 +148,7 @@ entry_1.place(x=750, y=120)
 button_1 = tk.Button(root, text="Search for this earthquake",  command=call_data_search)
 button_1.place(x=750, y=540)
 
-label_2 = tk.Label(root, text="Date of the earthquake" ,font=("Arial", 14))
+label_2 = tk.Label(root, text="Date of the earthquake. DELETE all numbers if unknown" ,font=("Arial", 14))
 label_2.place(x=750, y=150)
 
 entry_2 = DateEntry(root, date_pattern='dd-mm-yyyy')
