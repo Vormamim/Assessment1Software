@@ -9,7 +9,8 @@ first install depencies, and packages, by utilising the command pip install -r r
 To actually activate the python file and tkinter, use python main.py 
 
 # Features
-For the 3 fields (location, date and location), only location is needed (But filling out all of the fields will make results more accurate), as it will search and filter for the most accurate information based off the information provided. After results are returned it is exported to a CSV by Panda Package
+For the 3 fields (location, date and location), only location is needed (But filling out all of the fields will make results more accurate), as it will search and filter for the most accurate information based off the information provided. After results are returned it is exported to a CSV by Panda Package.
+The earthquake API, will find and display all earthquakes within a 0.3 margin point, with a magnitude match catergory attached to the result
 
 # API's Used
 The offical USGS Earthquake API and OpenStreetMap Nominatim, are used for this project, OpenstreetMap turns the Users City into coordinates for USGS, as USGS only recognises coordinates not words for cities. 

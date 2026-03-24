@@ -19,7 +19,11 @@ results_history = pd.DataFrame(columns=["location", "magnitude", "place", "time"
 
 
 
-def call_data_search(closest_result = 0.3, time_closest = 86400000): # As computers count in seconds time_closest variable is equal to 1 day in computer time 
+
+
+
+
+def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the project I chose a single day for the limit of a searching filter, about 1 day
 
     global search_history
     global results_history
@@ -32,7 +36,7 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # As comput
         corrected = str(run_spell_check.correct())
 
         if corrected.lower() != uncleaned_search.lower():
-            answer = messagebox.askyesno("Spell Check Just in Case", f"Did you mean '{corrected}") # Pop up to ask
+            answer = messagebox.askyesno("Spell Check Just in Case", f"Did you mean '{corrected}'") # Pop up to ask
             if answer:
                 location_area = corrected
             else:
@@ -51,13 +55,14 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # As comput
     date_earth = entry_2.get()
     magnitude = entry_3.get()
 
-
+    
+    
     if magnitude and not magnitude.replace(".", "", 1).isdigit():
         messagebox.showerror("Invaild input dude", "You can only put numbers in this section!")
         return
 
    
-    new_row = pd.DataFrame([{"location": location_area, "date": date_earth, "magnitude": magnitude}])
+    new_row = pd.DataFrame([{"location": location_area, "date": date_earth, "magnitude": magnitude}]) # Panda main frame    
     search_history = pd.concat([search_history, new_row], ignore_index=True)
     if not location_area:
         messagebox.showwarning("Missing information", "Please add location for a vaild search") # If even location is missing, will not continue

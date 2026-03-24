@@ -14,6 +14,12 @@ When a user inputs for example a just a city, it first converts the input latitu
 
 # Development
 
+![How a result will appear](screenshots/development1.png) 
+
+If a result does not completely match the input from a result, it will display like this.
+
+
+
 
 # Integration (What each MAJOR module does)
 Tkinter which is inbuilt in python is used for GUI implemention, which allows the user to see the actual program.
