@@ -29,22 +29,22 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the p
     global results_history
     listbox.delete(0, tk.END)
 
-    uncleaned_search = entry_1.get() # Runs a spell check using textblob, and asks user if thats what they meant for the input 
+    before_cleaned_out_search = entry_1.get() # Runs a spell check using textblob, and asks user if thats what they meant for the input 
 
-    if uncleaned_search:
-        run_spell_check = TextBlob(uncleaned_search)
+    if before_cleaned_out_search:
+        run_spell_check = TextBlob(before_cleaned_out_search)
         corrected = str(run_spell_check.correct())
 
-        if corrected.lower() != uncleaned_search.lower():
+        if corrected.lower() != before_cleaned_out_search.lower():
             answer = messagebox.askyesno("Spell Check Just in Case", f"Did you mean '{corrected}'") # Pop up to ask
             if answer:
                 location_area = corrected
             else:
-                location_area = uncleaned_search
+                location_area = before_cleaned_out_search
         else:
-            location_area = uncleaned_search
+            location_area = before_cleaned_out_search
 
-    if any(char.isdigit() for char in uncleaned_search): # Does the first input have numeric digits? It shouldn't this process stops it
+    if any(character.isdigit() for character in before_cleaned_out_search): # Does the first input have numeric digits? It shouldn't this process stops it
         messagebox.showerror("Invaild Characters here!", f"You can only put characters in this box!")
         return
 
@@ -52,7 +52,7 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the p
     entry_1.delete(0, tk.END)
     entry_1.insert(0, location_area)
 
-    date_earth = entry_2.get()
+    user_date_earth_chosen = entry_2.get()
     magnitude = entry_3.get()
 
     
@@ -62,7 +62,7 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the p
         return
 
    
-    new_row = pd.DataFrame([{"location": location_area, "date": date_earth, "magnitude": magnitude}]) # Panda main frame    
+    new_row = pd.DataFrame([{"location": location_area, "date": user_date_earth_chosen, "magnitude": magnitude}]) # Panda main frame    
     search_history = pd.concat([search_history, new_row], ignore_index=True)
     if not location_area:
         messagebox.showwarning("Missing information", "Please add location for a vaild search") # If even location is missing, will not continue
@@ -73,19 +73,19 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the p
         messagebox.showerror("Error", "Could not find location try again with a vaild input ") # Failed to procceed if location is not found
         return
     
-    if date_earth:
-       date_ms = datetime.strptime(date_earth, "%d-%m-%Y").replace(tzinfo=timezone.utc).timestamp() * 1000
-       start = datetime.strptime(date_earth, "%d-%m-%Y").strftime("%Y-%m-%d") 
-       end = (datetime.strptime(date_earth, "%d-%m-%Y") + timedelta(days=1)).strftime("%Y-%m-%d")
+    if user_date_earth_chosen:
+       date_important = datetime.strptime(user_date_earth_chosen, "%d-%m-%Y").replace(tzinfo=timezone.utc).timestamp() * 1000
+       start = datetime.strptime(user_date_earth_chosen, "%d-%m-%Y").strftime("%Y-%m-%d") 
+       end = (datetime.strptime(user_date_earth_chosen, "%d-%m-%Y") + timedelta(days=1)).strftime("%Y-%m-%d")
     else:
-       date_ms = None
+       date_important = None
        start = None
        end = None
 
        
 
     lat, lon = coords 
-    result, is_fallback = earthquakedata.real_location(lat, lon, date_earth, magnitude, start, end)
+    result, fallback = earthquakedata.real_location(lat, lon, user_date_earth_chosen, magnitude, start, end)
 
     
     
@@ -97,19 +97,19 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the p
     
     
 
-    features = result["features"]
-    if not features:
+    features_in_data = result["features_in_data"]
+    if not features_in_data:
         listbox.insert(tk.END, "No earthquakes found for this search")
         return
-    exact_area = any(location_area.lower() in ed ["properties"]["place"].lower() for ed in features)
+    exact_area = any(location_area.lower() in ed ["properties"]["place"].lower() for ed in features_in_data)
     found_match = False
-    for exact in features:
+    for exact in features_in_data:
         place =  exact["properties"]["place"]
         mag = exact["properties"]["mag"]
         time = exact["properties"]["time"]
         new_result = pd.DataFrame([{"location": location_area, "magnitude": mag, "place": place, "time": time}])
         results_history = pd.concat([results_history, new_result], ignore_index=True)
-        if date_ms and abs(time - date_ms) < time_closest:
+        if date_important and abs(time - date_important) < time_closest:
            found_match = True
            listbox.insert(tk.END, f"M{mag} - {place} (closest result)") # It found an exact location
         elif magnitude and abs(float(magnitude) - float(mag)) < closest_result:
@@ -120,7 +120,7 @@ def call_data_search(closest_result = 0.3, time_closest = 86400000): # For the p
         
     
 
-    if is_fallback: # API Retry Call with the case of User not filling out "Date of Earthquake"
+    if fallback: # API Retry Call with the case of User not filling out "Date of Earthquake"
         listbox.insert(0, "Could not find earthquake in exact location ")
         listbox.insert(1, "here are the closest ones")
 
