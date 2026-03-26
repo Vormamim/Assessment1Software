@@ -31,44 +31,21 @@ def coords_to_location(place,):
 
 def real_location(lat, lon, date, magnitude, start, end):
 
-    if magnitude == "": # This process Decides if magntiude is filled in by the user, and if it isn't display 10 of the newest earthquakes
-       decide = 10
-    else:
-       decide = 5
-
-    params={"latitude": lat, "longitude": lon,  "format": "geojson" , "limit" : decide, "maxradiuskm" : 500}
-    if start:
-        params["starttime"] = start
-        params["endtime"] = end
-
-
-    response_2 = requests.get(
+    params={"latitude": lat, "longitude": lon,  "format": "geojson" , "limit" : 10, "maxradiuskm" : 500}
+    
+    response_2_from_USGS = requests.get(
         BASE_URL,
         params=params
         
     )
    
-    data_2 = response_2.json()
-
-    if not data_2["features_in_data"]: # No results that match user input? Good News this process checks the next closest result
-        params.pop("starttime", None)
-        params.pop("endtime", None)
-        params["limit"] = 10
-        params["maxradiuskm"] = 750
-        response_2 = requests.get(BASE_URL, params=params)
-        data_2 = response_2.json()
-        return data_2, True
-    
-
-
-
+    data_2 = response_2_from_USGS.json()
 
     if not data_2:
-        print("Not found")
+        print("Not found please try again")
         return None
    
-    return data_2, False
-
+    return data_2
 
 
 

@@ -5,8 +5,8 @@ By inputting the wanted information of an earthquake by choice.
 This directory uses the official USGS provided API. The fields in this project are location, date and location. 
 
 # How to run the project:
-first install depencies, and packages, by utilising the command pip install -r requirements.txt , which will automatically install all packages.
-To actually activate the python file and tkinter, use python main.py 
+# first install depencies, and packages, by utilising the command "pip install -r requirements.txt" , which will automatically install all packages.
+# To actually activate the python file and tkinter, use python main.py 
 
 # Features
 For the 3 fields (location, date and location), only location is needed (But filling out all of the fields will make results more accurate), as it will search and filter for the most accurate information based off the information provided. After results are returned it is exported to a CSV by Panda Package.

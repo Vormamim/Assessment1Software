@@ -1,0 +1,55 @@
+GET location DATA from entry_1 
+GET date DATA from entry_2
+GET magnitude DATA from entry_3
+
+corrected = TextBlob(location).correct()
+IF corrected != location
+ASK "Did you mean?"
+IF yes:
+location = corrected
+IF no:
+location = location
+
+IF location has digits
+ERROR "Only characters allowed"
+RETURN
+END IF
+
+If magnitude has characters THEN
+ERROR "NUMBERS ONLY"
+RETURN
+
+IF location is empty
+SHOW ERROR "please add location"
+RETURN 
+END IF
+
+SEARCH coords to openstreetmap 
+IF coords is null
+SHOW error "location not found"
+RETURN
+END IF
+
+lat, lon = coords
+
+result = real_location(lat, lon)
+
+features = result["features"]
+IF features is empty THEN
+   DISPLAY "No earthquakes found"
+    RETURN
+END IF
+
+FOR earthquake IN features
+GET place, mag, time
+
+IF magnitude matches mag EXACTLY THEN
+   DISPLAY {mag} - {place} (exact match)
+ELSE
+   DISPLAY {mag} - {place} 
+
+SAVE earthquake to results_history
+
+EXPORT results_history to CSV
+
+END call_data_search

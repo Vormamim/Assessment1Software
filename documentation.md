@@ -7,19 +7,38 @@ The program handles date filitering, magnitude filitering and spell checking. Wh
 # Determing Specifications (Functional and non-functional)
 When a user inputs for example a just a city, it first converts the input latitude and longtiude via OpenStreetMap and sends that data to USGS, which creates a earthquake list. Another use case can involved city, date and magnitude, where it still involves the OpenStreetMap, but the rest of the data is sent to USGS immediately. Non-functional features in this program, include a quick API response time, with the user side having easy to use and clear error messasges
 
-# Design
+# Design and pseudocode
 
+For Pseudocode is in pseudocode.txt, as formatting is broken on md files. 
 
+![Flowchart](screenshots/Flowchart.drawio.png) 
 
+Here is the flowchart, which displays the errors, and successes in the procedures.
 
-# Development
+![Structure Chart](screenshots/StructureChart.drawio.png)
+
+A structure chart in this project shows the main functions of earthquakedata.py and main.py, which is broken into modules and how they work together. And where data is passed
+
+# Development and Debugging
 
 ![How a result will appear](screenshots/development1.png) 
 
-If a result does not completely match the input from a result, it will display like this.
+If a result does not completely match the input from a result, it will display like this. Which was the first plan however changed it to display 10 of the newest earthquakes in that region for more usefulness 
+
+![How a result will appear](screenshots/Development2.png) 
+
+After feedback (Above) I changed it to appear 10 of the newest earthquakes in that region when there isn't an exact matching earthquake in the search. This improved functionality
+
+
+![Gantt Chart](screenshots/ganttchart.png) 
+This gantt chart displays the flow of which i developed, starting with searching for API Source, moving to practical procedures anad finally theory/development section.   
+
+![Data Dictonary](screenshots/DataDict.png)
+Data Dictonary describes the structured data sets and categories within this project. It is quick to understand and relate to the python code.
 
 
 
+The two classmates I asked to review my code and actual process. Which they gave positive reviews to response times and safeguards to prevent null responses, errors and runtime failures. Where by giving them just the code and asked them to start the project themseleves, which they did successfully because the instructions in README.md. However because if an import doesnt lead to exact answer it would be useless, so in response I added a fallback where the 10 newest earthquakes in that region would appear and show to add more functionality. The GUI wasn't cluttered and without distractions and managed to not crash with mulitple searches consecutively.
 
 # Integration (What each MAJOR module does)
 Tkinter which is inbuilt in python is used for GUI implemention, which allows the user to see the actual program.
