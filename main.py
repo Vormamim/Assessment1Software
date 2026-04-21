@@ -8,7 +8,7 @@ import pandas as pd
 
 root = tk.Tk()
 root.title("Earthquake lookup")
-root.geometry("600x400")
+root.geometry("760x520")
 
 # Function: call backend and API from earthquakedata.py, as that is where the API calling process happens
 
@@ -28,22 +28,24 @@ def call_data_search(): # For the project I chose a single day for the limit of 
     listbox.delete(0, tk.END)
 
     before_cleaned_out_search = entry_1.get() # Runs a spell check using textblob, and asks user if thats what they meant for the input 
+    location_area = before_cleaned_out_search.strip()
 
-    if before_cleaned_out_search:
-        run_spell_check = TextBlob(before_cleaned_out_search)
+    if location_area:
+        run_spell_check = TextBlob(location_area)
         corrected = str(run_spell_check.correct())
 
-        if corrected.lower() != before_cleaned_out_search.lower():
+        if corrected.lower() != location_area.lower():
             answer = messagebox.askyesno("Spell Check Just in Case", f"Did you mean '{corrected}'") # Pop up to ask
             if answer:
                 location_area = corrected
-            else:
-                location_area = before_cleaned_out_search
-        else:
-            location_area = before_cleaned_out_search
+ 
 
-    if any(character.isdigit() for character in before_cleaned_out_search): # Does the first input have numeric digits? It shouldn't this process stops it
+    if any(character.isdigit() for character in location_area): # Does the first input have numeric digits? It shouldn't this process stops it
         messagebox.showerror("Invaild Characters here!", f"You can only put characters in this box")
+        return
+
+    if not location_area:
+        messagebox.showwarning("Missing information", "Please add location for a vaild search") # If even location is missing, will not continue
         return
 
 
@@ -60,21 +62,15 @@ def call_data_search(): # For the project I chose a single day for the limit of 
         return
 
 
-    if not location_area:
-        messagebox.showwarning("Missing information", "Please add location for a vaild search") # If even location is missing, will not continue
-        return
-
     coords = earthquakedata.coords_to_location(location_area)
     if coords is None:
         messagebox.showerror("Error", "Could not find location try again with a vaild input ") # Failed to procceed if location is not found
         return
     
     if user_date_earth_chosen:
-       date_important = datetime.strptime(user_date_earth_chosen, "%d-%m-%Y").replace(tzinfo=timezone.utc).timestamp() * 1000
        start = datetime.strptime(user_date_earth_chosen, "%d-%m-%Y").strftime("%Y-%m-%d") 
        end = (datetime.strptime(user_date_earth_chosen, "%d-%m-%Y") + timedelta(days=1)).strftime("%Y-%m-%d")
     else:
-       date_important = None
        start = None
        end = None
 
@@ -82,9 +78,11 @@ def call_data_search(): # For the project I chose a single day for the limit of 
 
     lat, lon = coords 
     result = earthquakedata.real_location(lat, lon, user_date_earth_chosen, magnitude, start, end)
+    if result is None:
+        messagebox.showerror("Error", "Could not fetch earthquake data right now.")
+        return
 
-
-    features = result["features"]
+    features = result.get("features", [])
     if not features:
         listbox.insert(tk.END, "No earthquakes found for this search")
         return
@@ -108,38 +106,38 @@ def call_data_search(): # For the project I chose a single day for the limit of 
 
 # Below are Visual Widgets 
 label_0 = tk.Label(root, text="To search earthquakes on this directory, fill out the location, other inputs such as \n the date and magnitude are optional but recommended for more accurate searches. Leave Date with NO characters if unknown", font=("helvetica", 12))
-label_0.place(x=600, y=50)
+label_0.place(x=30, y=60)
 
 label_1 = tk.Label(root, text="Welcome to the EarthQUAKE Directory", font=("impact", 32))
-label_1.place(x=590, y=-10)
+label_1.place(x=30, y=10)
 
 
 label_2 = tk.Label(root, text="Location of the earthquake?:" ,font=("Arial", 14))
-label_2.place(x=750, y=90)
+label_2.place(x=30, y=120)
 
 
  
 
 entry_1 = tk.Entry(root, width=30, bg=("white"))
-entry_1.place(x=750, y=120)
+entry_1.place(x=30, y=150)
 
 button_1 = tk.Button(root, text="Search for this earthquake",  command=call_data_search)
-button_1.place(x=750, y=540)
+button_1.place(x=30, y=450)
 
 label_2 = tk.Label(root, text="Date of the earthquake." ,font=("Arial", 14))
-label_2.place(x=750, y=150)
+label_2.place(x=30, y=190)
 
 entry_2 = DateEntry(root, date_pattern='dd-mm-yyyy')
-entry_2.place(x=750, y=180)
+entry_2.place(x=30, y=220)
 
 label_3 = tk.Label(root, text="Magnitude of the earthquake? Up to 1 decimal point.")
-label_3.place(x=750, y=220)
+label_3.place(x=30, y=260)
 
 entry_3 = tk.Entry(root, width=30, bg=("white"))
-entry_3.place(x=750, y=260)
+entry_3.place(x=30, y=290)
 
 listbox = tk.Listbox(root, width=50,height=10)
-listbox.place(x=750, y=340)
+listbox.place(x=30, y=330)
 
 
 root.mainloop()
