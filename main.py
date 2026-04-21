@@ -3,7 +3,10 @@ from tkcalendar import DateEntry
 import earthquakedata
 from tkinter import messagebox
 from datetime import datetime, timezone, timedelta
-from textblob import TextBlob # Checks spelling of user
+try:
+    from textblob import TextBlob # Checks spelling of user
+except ImportError:
+    TextBlob = None
 import pandas as pd
 
 root = tk.Tk()
@@ -30,7 +33,7 @@ def call_data_search(): # For the project I chose a single day for the limit of 
     before_cleaned_out_search = entry_1.get() # Runs a spell check using textblob, and asks user if thats what they meant for the input 
     location_area = before_cleaned_out_search.strip()
 
-    if location_area:
+    if location_area and TextBlob is not None:
         run_spell_check = TextBlob(location_area)
         corrected = str(run_spell_check.correct())
 
@@ -129,6 +132,7 @@ label_2.place(x=30, y=190)
 
 entry_2 = DateEntry(root, date_pattern='dd-mm-yyyy')
 entry_2.place(x=30, y=220)
+entry_2.delete(0, tk.END)
 
 label_3 = tk.Label(root, text="Magnitude of the earthquake? Up to 1 decimal point.")
 label_3.place(x=30, y=260)

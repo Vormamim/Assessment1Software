@@ -1,3 +1,10 @@
+try:
+    import truststore
+except ImportError:
+    truststore = None
+else:
+    truststore.inject_into_ssl()
+
 import requests
 
 BASE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query" # URL FOR API

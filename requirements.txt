@@ -42,6 +42,8 @@ tkcalendar==1.6.1
 
 tqdm==4.67.3
 
+truststore==0.10.4
+
 tzdata==2025.3
 
 urllib3==2.6.3
